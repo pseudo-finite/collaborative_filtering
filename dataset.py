@@ -15,7 +15,7 @@ class dataset:
         self.Us = []         # user list
         self.Is = []         # item list
         self.U2I2Rating = {} # user's rating for an item(sparse)
-        self.U2IRs = []      # user's item rating list(dense)
+        self.IRss = []       # user's item rating list(dense)
 
         # (user,item)=5*4 の rating dictionary を作成
         self.Us = ["u"+str(i) for i in range(1,6)]
@@ -33,7 +33,7 @@ class dataset:
             for item in self.Is:
                 rating = self.U2I2Rating[user][item] if item in self.U2I2Rating[user] else 0
                 IRs.append(rating)
-            self.U2IRs.append(IRs)
+            self.IRss.append(IRs)
 
         return
 
@@ -46,11 +46,11 @@ class dataset:
             IRs = [(item, str(self.U2I2Rating[user][item])) for item in self.U2I2Rating[user]]
             U2I2R_s += user + ": " + "".join(["({},{}) ".format(i,r) for i,r in IRs]) + "\n"
 
-        U2IR_s = ""
-        for IRs in self.U2IRs:
-            U2IR_s += " ".join(map(str, IRs)) + "\n"
+        IRss_s = ""
+        for IRs in self.IRss:
+            IRss_s += " ".join(map(str, IRs)) + "\n"
 
-        return "".join([Us_s, Is_s, U2I2R_s, U2IR_s])
+        return "".join([Us_s, Is_s, U2I2R_s, IRss_s])
 
 
 
