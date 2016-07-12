@@ -1,17 +1,18 @@
 # -*- coding:utf-8 -*-
 
+import sys
 import math
 import dataset
+
 
 class cf:
     def __init__(self, Us, Is, U2I2Rating, sim_func_name):
         self.Us = []         # user list
         self.Is = []         # item list
-        self.U2I2Rating = {} # user's rating for an item
-        self.I2Us = {}       # item's user list
-        self.U2Is = {}       # user's item list 
-        self.U2Avg = {}      # user's average rating
-        self.U2U2Sim = {}    # user's similarity 
+        self.U2I2Rating = {} # user の item に対する rating
+        self.I2Us = {}       # item を評価した user list
+        self.U2Is = {}       # user が評価した item set
+        self.U2U2Sim = {}    # user と user の similarity 
 
         # データのセット
         self.Us = Us
@@ -28,8 +29,7 @@ class cf:
 
         # データの前処理・計算
         self.setI2Us()
-        self.setU2Is()
-        self.setU2Avg()
+        self.setU2Is() 
         self.setU2U2Sim(sim_func_name)
         return
 
@@ -47,12 +47,6 @@ class cf:
                 self.I2Us[item].add(user)
         return 
 
-    def setU2Avg(self):
-        for user in self.Us:
-            I2Rating = self.U2I2Rating[user]
-            self.U2Avg[user] = 1.0*sum(I2Rating.values()) / len(I2Rating)
-        return 
-
 
     def setU2U2Sim(self, sim_func_name):
         for user1 in self.Us:
@@ -61,7 +55,6 @@ class cf:
                 self.U2U2Sim.setdefault(user2, {})
                 if user1 >= user2:continue
                 sim = self.calc_sim(user1, user2)
-                # print(user1, user2, sim) 
                 if sim != 0:
                     self.U2U2Sim[user1][user2] = sim
                     self.U2U2Sim[user2][user1] = sim
@@ -73,7 +66,7 @@ class cf:
         if len(Is1)<=1 or len(Is2)<=1:
             sim = 0
         else:
-            Is12 = self.U2Is[user1] & self.U2Is[user2]
+            Is12 = Is1 & Is2
             if len(Is12) <= 1:
                 sim = 0
             else:
@@ -110,18 +103,18 @@ class cf:
         for user2 in self.I2Us[item]:
             sim = U2Sim[user2] if user2 in U2Sim else 0
             if sim==0:continue
-            Is1 = self.U2Is[user1]
-            Is2 = self.U2Is[user2]
             Is12 = self.U2Is[user1] & self.U2Is[user2]
             Ratings2 = [self.U2I2Rating[user2][item] for item in Is12]
             avg2 = 1.0 * sum(Ratings2) / len(Ratings2)
             x += sim * (self.U2I2Rating[user2][item] - avg2)
-            # x += sim * (self.U2I2Rating[user2][item] - self.U2Avg[user2])
             y += abs(sim)
+
+        I2Rating = self.U2I2Rating[user1]
+        avg = 1.0*sum(I2Rating.values()) / len(I2Rating)
         if y !=0:
-            score = self.U2Avg[user1] + x/y
+            score = avg + x/y
         else:
-            score = self.U2Avg[user1] 
+            score = avg
         return score
 
         
@@ -132,21 +125,24 @@ if __name__ == "__main__":
     print(sim_func_name)
 
     print('=== get dataset ===')
-    no = 2
+    no = 3
     data = dataset.dataset(no)
-    print(data)
+    # print(data)
+    sys.stdout.flush()
 
     
     print('=== create CF model ===')
     cf_model = cf(data.Us, data.Is, data.U2I2Rating, sim_func_name)
-    print("U2Is :", cf_model.U2Is)
-    print("I2Us :", cf_model.I2Us)
-    print("U2Avg:", cf_model.U2Avg)
-    print(cf_model.U2U2Sim)
+    # print("U2Is :", cf_model.U2Is)
+    # print("I2Us :", cf_model.I2Us)
+    # print("U2Avg:", cf_model.U2Avg)
+    # print(cf_model.U2U2Sim)
+    sys.stdout.flush()
 
     print('=== calc score ===')
     for user in cf_model.Us:
-        print(user, "::::::::::::::::::::::::::::::::::::::::::")
+        # print(user, "-"*50)
         for item in cf_model.Is:
             score = cf_model.calc_score(user, item)
-            print("  ", item, score)
+            # print("  ", item, score)
+
