@@ -4,6 +4,37 @@ import sys
 import math
 import dataset
 
+# def pearson_correlation(Is1, Is2, I2Rating1, I2Rating2):
+#     if len(Is1)<=1 or len(Is2)<=1:
+#         sim = 0
+#     else:
+#         Is12 = Is1 & Is2
+#         if len(Is12) <= 1:
+#             sim = 0
+#         else:
+#             Ratings1 = [I2Rating1[item] for item in Is12]
+#             Ratings2 = [I2Rating2[item] for item in Is12]
+#             avg1 = 1.0 * sum(Ratings1) / len(Ratings1)
+#             avg2 = 1.0 * sum(Ratings2) / len(Ratings2)
+#             X = sum([(rating-avg1)*(rating-avg1) for rating in Ratings1])
+#             Y = sum([(rating-avg2)*(rating-avg2) for rating in Ratings2])
+#             if X==0 or Y==0:
+#                 sim = 0
+#             else:
+#                 XY = sum([(Ratings1[i]-avg1)*(Ratings2[i]-avg2) for i in range(len(Ratings1))])
+#                 sim = XY / math.sqrt(X*Y)
+#     return sim
+
+# def cosine_similarity(I2Rating1, I2Rating2):
+#     XY = sum([rating1*I2Rating2[item] for item,rating1 in I2Rating1.items() if item in I2Rating2])
+#     if XY == 0:
+#         sim = 0
+#     else:
+#         X = sum([rating*rating for rating in I2Rating1.values()])
+#         Y = sum([rating*rating for rating in I2Rating2.values()])
+#         sim = XY / math.sqrt(X*Y)
+#     return sim
+
 
 class cf:
     def __init__(self, Us, Is, U2I2Rating, sim_func_name):
@@ -18,14 +49,6 @@ class cf:
         self.Us = Us
         self.Is = Is
         self.U2I2Rating = U2I2Rating
-
-        # 類似度関数のセット
-        if sim_func_name == "peason":
-            self.calc_sim = self.pearson_correlation
-        elif sim_func_name == "cosine":
-            self.calc_sim = self.cosine_similarity
-        else:
-            assert False
 
         # データの前処理・計算
         self.setI2Us()
@@ -54,7 +77,15 @@ class cf:
                 self.U2U2Sim.setdefault(user1, {})
                 self.U2U2Sim.setdefault(user2, {})
                 if user1 >= user2:continue
-                sim = self.calc_sim(user1, user2)
+
+                # calc similarity
+                if sim_func_name == "pearson":
+                    # sim = pearson_correlation(self.U2Is[user1], self.U2Is[user2], self.U2I2Rating[user1], self.U2I2Rating[user2])
+                    sim = self.pearson_correlation(user1, user2)
+                elif sim_func_name == "cosine":
+                    # sim = cosine_similarity(self.U2I2Rating[user1], self.U2I2Rating[user2])
+                    sim = self.cosine_similarity(user1, user2)
+                
                 if sim != 0:
                     self.U2U2Sim[user1][user2] = sim
                     self.U2U2Sim[user2][user1] = sim
@@ -119,30 +150,32 @@ class cf:
 
         
 if __name__ == "__main__":
-    print('=== set sim_func ===')
-    sim_func_name = "peason"
+    print('*** begin ***');sys.stdout.flush()
+
+    print('=== set sim_func ===');sys.stdout.flush()
+    sim_func_name = "pearson"
     # sim_func_name = "cosine"
     print(sim_func_name)
 
-    print('=== get dataset ===')
+    print('=== get dataset ===');sys.stdout.flush()
     no = 3
     data = dataset.dataset(no)
     # print(data)
-    sys.stdout.flush()
 
     
-    print('=== create CF model ===')
+    print('=== create CF model ===');sys.stdout.flush()
     cf_model = cf(data.Us, data.Is, data.U2I2Rating, sim_func_name)
     # print("U2Is :", cf_model.U2Is)
     # print("I2Us :", cf_model.I2Us)
     # print("U2Avg:", cf_model.U2Avg)
     # print(cf_model.U2U2Sim)
-    sys.stdout.flush()
 
-    print('=== calc score ===')
+
+    print('=== calc score ===');sys.stdout.flush()
     for user in cf_model.Us:
         # print(user, "-"*50)
         for item in cf_model.Is:
             score = cf_model.calc_score(user, item)
             # print("  ", item, score)
 
+    print('***  end  ***');sys.stdout.flush()
