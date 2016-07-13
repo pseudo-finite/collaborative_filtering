@@ -73,7 +73,7 @@ class cf:
         else:
             if self.sim_func_name == "pearson":
                 sim = pearson_correlation(self.U2I2Rating[user1], self.U2I2Rating[user2])
-            elif sim_func_name == "cosine":
+            elif self.sim_func_name == "cosine":
                 sim = cosine_similarity(self.U2I2Rating[user1], self.U2I2Rating[user2])
             else:
                 assert False
@@ -143,13 +143,13 @@ if __name__ == "__main__":
     print('*** begin ***');sys.stdout.flush()
 
     print('=== get dataset ===');sys.stdout.flush()
-    no = 3
+    no = 2
     data = dataset.dataset(no)
     # print(data)
     
     print('=== create CF model ===');sys.stdout.flush()
-    sim_func_name = "pearson"
-    # sim_func_name = "cosine"
+    # sim_func_name = "pearson"
+    sim_func_name = "cosine"
     cf_model = cf(data.Us, data.Is, data.U2I2Rating, sim_func_name)
     print(sim_func_name)
     # print("I2Us :", cf_model.I2Us)
