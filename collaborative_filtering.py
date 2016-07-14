@@ -304,15 +304,12 @@ def test_pearson_recommendation2():
 if __name__ == "__main__":
     import sys
     import dataset
-    I2Rating1 = {"i1":1}
-    I2Rating2 = {"i1":1}
-    print(cosine_similarity(I2Rating1, I2Rating2))
 
-    print('*** begin ***');sys.stdout.flush()
+    print('***** begin *****');sys.stdout.flush()
 
     print('=== get dataset ===');sys.stdout.flush()
-    no = 3
-    data = dataset.dataset(no)
+    no = 0
+    data = dataset(no, N=2000, M=400, K=20, R=5, seed=1)
     # print(data)
     
     print('=== create CF model ===');sys.stdout.flush()
@@ -322,7 +319,7 @@ if __name__ == "__main__":
     print(sim_func_name)
     # print("I2Us :", cf_model.I2Us)
 
-    print('=== calc score ===');sys.stdout.flush()
+    print('=== calc scores ===');sys.stdout.flush()
     for user in cf_model.Us:
         print("user:", user);sys.stdout.flush()
         for item in cf_model.Is:
@@ -336,5 +333,5 @@ if __name__ == "__main__":
         print("user:", user);sys.stdout.flush()
         print("     ", "|".join(RecIs));sys.stdout.flush()
 
-    print('***  end  ***');sys.stdout.flush()
+    print('*****  end  *****');sys.stdout.flush()
 
