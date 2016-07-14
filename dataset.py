@@ -20,12 +20,10 @@ no=2
 
 '''
 no=3
-[[1,4,2,2]
-,[5,2,4,4]
-,[0,0,3,0]
-,[2,5,0,5]
-,[4,1,0,1]
-,[0,2,5,0]]
+[[1,5,0,2,4,0]
+,[4,2,0,5,1,2]
+,[2,4,3,0,0,5]
+,[2,4,0,5,1,0]]
 '''
 
 '''
@@ -87,16 +85,14 @@ class dataset:
             self.U2I2Rating["u3"]["i1"] = 2;  self.U2I2Rating["u3"]["i2"] = 1;  self.U2I2Rating["u3"]["i3"] = 3;  self.U2I2Rating["u3"]["i4"] = 1
             self.U2I2Rating["u4"]["i1"] = 1;  self.U2I2Rating["u4"]["i2"] = 3;  self.U2I2Rating["u4"]["i3"] = 2;  
         elif no==3:
-            # (user,item)=6*4 の rating dictionary を作成
-            self.Us = ["u"+str(i) for i in range(1,7)]
-            self.Is = ["i"+str(i) for i in range(1,5)]
+            # (user,item)=4*6 の rating dictionary を作成
+            self.Us = ["u"+str(i) for i in range(1,5)]
+            self.Is = ["i"+str(i) for i in range(1,7)]
             for user in self.Us:self.U2I2Rating[user]  = {}
-            self.U2I2Rating["u1"]["i1"] = 1;  self.U2I2Rating["u1"]["i2"] = 4;  self.U2I2Rating["u1"]["i3"] = 2;  self.U2I2Rating["u1"]["i4"] = 2
-            self.U2I2Rating["u2"]["i1"] = 5;  self.U2I2Rating["u2"]["i2"] = 2;  self.U2I2Rating["u2"]["i3"] = 4;  self.U2I2Rating["u2"]["i4"] = 4
-            self.U2I2Rating["u3"]["i3"] = 3
-            self.U2I2Rating["u4"]["i1"] = 2;  self.U2I2Rating["u4"]["i2"] = 5;  self.U2I2Rating["u4"]["i4"] = 5;  
-            self.U2I2Rating["u5"]["i1"] = 4;  self.U2I2Rating["u5"]["i2"] = 1;  self.U2I2Rating["u5"]["i4"] = 1;  
-            self.U2I2Rating["u6"]["i2"] = 2;  self.U2I2Rating["u6"]["i3"] = 5;
+            self.U2I2Rating["u1"]["i1"] = 1;  self.U2I2Rating["u1"]["i2"] = 5;  self.U2I2Rating["u1"]["i4"] = 2;  self.U2I2Rating["u1"]["i5"] = 4
+            self.U2I2Rating["u2"]["i1"] = 4;  self.U2I2Rating["u2"]["i2"] = 2;  self.U2I2Rating["u2"]["i4"] = 5;  self.U2I2Rating["u2"]["i5"] = 1;  self.U2I2Rating["u2"]["i6"] = 2
+            self.U2I2Rating["u3"]["i1"] = 2;  self.U2I2Rating["u3"]["i2"] = 4;  self.U2I2Rating["u3"]["i3"] = 3;  self.U2I2Rating["u3"]["i6"] = 5
+            self.U2I2Rating["u4"]["i1"] = 2;  self.U2I2Rating["u4"]["i2"] = 4;  self.U2I2Rating["u4"]["i4"] = 5;  self.U2I2Rating["u4"]["i5"] = 1
         elif no==0:
             self.Us, self.Is, self.U2I2Rating = createDummyData(N, M, K, R, seed)
         else:

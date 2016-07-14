@@ -110,7 +110,6 @@ class cf:
             # user1 と user2 の similarity の取得
             sim = self.get_sim(user1, user2)
             if sim==0:continue
-
             # user1 user2 が共通に評価した item 集合から user2 の rating average を計算
             avg2 = self.calc_other_rating_avg(user1, user2)
 
@@ -147,12 +146,11 @@ if __name__ == "__main__":
     # data = dataset(no, N=2000, M=400, K=20, R=5, seed=1)
     no = 3
     data = dataset.dataset(no)
-
     # print(data)
     
     print('=== create CF model ===');sys.stdout.flush()
-    # sim_func_name = "pearson"
-    sim_func_name = "cosine"
+    sim_func_name = "pearson"
+    # sim_func_name = "cosine"
     cf_model = cf(data.Us, data.Is, data.U2I2Rating, sim_func_name)
     print(sim_func_name)
     # print("I2Us :", cf_model.I2Us)
@@ -172,3 +170,11 @@ if __name__ == "__main__":
         print("     ", "|".join(RecIs));sys.stdout.flush()
 
     print('***  end  ***');sys.stdout.flush()
+
+    # dataset:no=3
+    # pearson
+    # u1 - i6:score = 4.56?(=4.555555555555555)  
+
+    # dataset:no=2
+    # pearson
+    # u2 - i1:score = 2.75?
