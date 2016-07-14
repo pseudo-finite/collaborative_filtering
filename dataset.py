@@ -14,15 +14,31 @@ no=2
 [[1,3,0,3]
 ,[0,1,3,0]
 ,[2,1,3,1]
-,[1,3,2,0]
+,[1,3,2,0]]
 '''
+
 
 '''
 no=3
-中規模データの作成
+[[1,4,2,2]
+,[5,2,4,4]
+,[0,0,3,0]
+,[2,5,0,5]
+,[4,1,0,1]
+,[0,2,5,0]]
 '''
 
-def createDummyData(N=2000, M=400, K=20, R=5, seed=1):
+'''
+no=0
+ランダムデータ生成
+N=2000 # user num
+M=400  # item num
+K=20   # 1 user あたりの rating する item の数
+R=5    # rating の範囲
+seed=1 # 乱数の seed 
+'''
+
+def createDummyData(N, M, K, R, seed):
     import random
     random.seed(seed)
     
@@ -44,7 +60,7 @@ def createDummyData(N=2000, M=400, K=20, R=5, seed=1):
 
 
 class dataset:
-    def __init__(self, no):
+    def __init__(self, no=1, N=2000, M=400, K=20, R=5, seed=1):
         
         self.Us = []         # user list
         self.Is = []         # item list
@@ -71,7 +87,18 @@ class dataset:
             self.U2I2Rating["u3"]["i1"] = 2;  self.U2I2Rating["u3"]["i2"] = 1;  self.U2I2Rating["u3"]["i3"] = 3;  self.U2I2Rating["u3"]["i4"] = 1
             self.U2I2Rating["u4"]["i1"] = 1;  self.U2I2Rating["u4"]["i2"] = 3;  self.U2I2Rating["u4"]["i3"] = 2;  
         elif no==3:
-            self.Us, self.Is, self.U2I2Rating = createDummyData()
+            # (user,item)=6*4 の rating dictionary を作成
+            self.Us = ["u"+str(i) for i in range(1,7)]
+            self.Is = ["i"+str(i) for i in range(1,5)]
+            for user in self.Us:self.U2I2Rating[user]  = {}
+            self.U2I2Rating["u1"]["i1"] = 1;  self.U2I2Rating["u1"]["i2"] = 4;  self.U2I2Rating["u1"]["i3"] = 2;  self.U2I2Rating["u1"]["i4"] = 2
+            self.U2I2Rating["u2"]["i1"] = 5;  self.U2I2Rating["u2"]["i2"] = 2;  self.U2I2Rating["u2"]["i3"] = 4;  self.U2I2Rating["u2"]["i4"] = 4
+            self.U2I2Rating["u3"]["i3"] = 3
+            self.U2I2Rating["u4"]["i1"] = 2;  self.U2I2Rating["u4"]["i2"] = 5;  self.U2I2Rating["u4"]["i4"] = 5;  
+            self.U2I2Rating["u5"]["i1"] = 4;  self.U2I2Rating["u5"]["i2"] = 1;  self.U2I2Rating["u5"]["i4"] = 1;  
+            self.U2I2Rating["u6"]["i2"] = 2;  self.U2I2Rating["u6"]["i3"] = 5;
+        elif no==0:
+            self.Us, self.Is, self.U2I2Rating = createDummyData(N, M, K, R, seed)
         else:
             assert False
             
@@ -103,6 +130,7 @@ class dataset:
 
 
 if __name__ == "__main__":
+    
     no = 1
     data = dataset(no)
     print(data)
@@ -113,5 +141,9 @@ if __name__ == "__main__":
 
     no = 3
     data = dataset(no)
-    # print(data)
-    
+    print(data)
+
+
+    no = 0
+    data = dataset(no, N=2000, M=400, K=20, R=5, seed=1)
+    print(len(data.Us), len(data.Is), len(data.U2I2Rating))
