@@ -143,8 +143,11 @@ if __name__ == "__main__":
     print('*** begin ***');sys.stdout.flush()
 
     print('=== get dataset ===');sys.stdout.flush()
-    no = 2
+    # no = 0
+    # data = dataset(no, N=2000, M=400, K=20, R=5, seed=1)
+    no = 3
     data = dataset.dataset(no)
+
     # print(data)
     
     print('=== create CF model ===');sys.stdout.flush()
