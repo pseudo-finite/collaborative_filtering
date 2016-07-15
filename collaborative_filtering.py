@@ -123,10 +123,18 @@ class cf:
         score = avg1 + x/y if y != 0 else avg1
         return score
 
+    def calcI2Score(self, user):
+        I2Score = []
+        for item in self.Is:
+            score = self.calc_score(user, item)
+            I2Score.append((item, score))
+
+        I2Score.sort(key=lambda x:x[1], reverse=True)
+        return I2Score
+
     def recommend_item(self, user, N):
         I2Score = []
         for item in self.Is:
-            if item in set(self.U2I2Rating[user]):continue
             score = self.calc_score(user, item)
             I2Score.append((item, score))
 
@@ -145,7 +153,7 @@ if __name__ == "__main__":
     print('***** begin *****');sys.stdout.flush()
 
     print('=== get dataset ===');sys.stdout.flush()
-    no = 0
+    no = 3
     data = dataset.dataset(no, N=2000, M=400, K=20, R=5, seed=1)
     # print(data)
     
@@ -158,15 +166,15 @@ if __name__ == "__main__":
 
     print('=== calc scores ===');sys.stdout.flush()
     for user in cf_model.Us:
-        # print("user:", user);sys.stdout.flush()
-        for item in cf_model.Is:
-            score = cf_model.calc_score(user, item)
-            # print("     ", item, score)
+        print("user:", user);sys.stdout.flush()
+        I2Score = cf_model.calcI2Score(user)
+        for item, score in I2Score:
+            print("     ", item, score)
 
-    print('=== recommend items ===');sys.stdout.flush()
-    N = 10
-    for user in cf_model.Us:
-        RecIs =cf_model.recommend_item(user, N)
+    #print('=== recommend items ===');sys.stdout.flush()
+    #N = 10
+    #for user in cf_model.Us:
+    #    RecIs =cf_model.recommend_item(user, N)
         # print("user:", user);sys.stdout.flush()
         # print("     ", "|".join(RecIs));sys.stdout.flush()
 
