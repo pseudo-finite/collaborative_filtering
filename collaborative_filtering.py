@@ -38,12 +38,13 @@ def cosine_similarity(I2Rating1, I2Rating2):
 
 
 class cf:
-    def __init__(self, Us, Is, U2I2Rating, sim_func_name):
+    def __init__(self, Us, Is, U2I2Rating, sim_func_name, model_type_name):
         self.Us = []         # user list
         self.Is = []         # item list
         self.U2I2Rating = {} # user の item に対する rating
         self.I2Us = {}       # item を評価した user list
         self.sim_func_name = ""
+        self.model_type_name = ""
         self.U2Is = {}
         self.UU2Sim = {}
 
@@ -52,8 +53,9 @@ class cf:
         self.Is = Is
         self.U2I2Rating = U2I2Rating
         self.sim_func_name = sim_func_name
+        self.model_type_name = model_type_name
 
-        # データの前処理・計算
+        # データの前処理
         self.setI2Us()
         return
 
@@ -103,25 +105,41 @@ class cf:
         return avg1
 
     def calc_score(self, user1, item):
-        x = 0.0
-        y = 0.0
-        for user2 in self.I2Us[item]:
-            if user1 == user2:continue
+        if self.model_type_name == "normalized":
+            x = 0.0
+            y = 0.0
+            avg1 = 0.0
+            avg2 = 0.0
+            score = 0.0
+            for user2 in self.I2Us[item]:
+                if user1 == user2:continue
             
-            # user1 と user2 の similarity の取得
-            sim = self.get_sim(user1, user2)
-            if sim==0:continue
-            # user1 user2 が共通に評価した item 集合から user2 の rating average を計算
-            avg2 = self.calc_other_rating_avg(user1, user2)
+                # user1 と user2 の similarity の取得
+                sim = self.get_sim(user1, user2)
+                if sim==0:continue
+                # user1 user2 が共通に評価した item 集合から user2 の rating average を計算
+                avg2 = self.calc_other_rating_avg(user1, user2)
 
-            x += sim * (self.U2I2Rating[user2][item] - avg2)
-            y += abs(sim)
+                x += sim * (self.U2I2Rating[user2][item] - avg2)
+                y += abs(sim)
 
-        # 対象 user の rating average を計算
-        avg1 = self.calc_target_rating_avg(user1)
+            # 対象 user の rating average を計算
+            avg1 = self.calc_target_rating_avg(user1)
 
-        # score の計算
-        score = avg1 + x/y if y != 0 else avg1
+            # score の計算
+            score = avg1 + x/y if y != 0 else avg1
+        elif self.model_type_name == "sim_multi_rating":
+            score = 0.0
+            for user2 in self.I2Us[item]:
+                if user1 == user2:continue
+            
+                # user1 と user2 の similarity の取得
+                sim = self.get_sim(user1, user2)
+                if sim==0:continue
+                score += sim * self.U2I2Rating[user2][item]
+        else:
+            assert False
+
         return score
 
     def calcI2Score(self, user):
@@ -160,24 +178,27 @@ if __name__ == "__main__":
     print('***** begin *****');sys.stdout.flush()
 
     print('=== get dataset ===');sys.stdout.flush()
-    no = 0
+    no = 1
     data = dataset.dataset(no, N=2000, M=400, K=20, R=5, seed=1)
     # print(data)
     
     print('=== create CF model ===');sys.stdout.flush()
-    sim_func_name = "pearson"
-    # sim_func_name = "cosine"
-    cf_model = cf(data.Us, data.Is, data.U2I2Rating, sim_func_name)
+    #sim_func_name = "pearson"
+    sim_func_name = "cosine"
+    #model_type_name = "normalized"
+    model_type_name = "sim_multi_rating"
+    cf_model = cf(data.Us, data.Is, data.U2I2Rating, sim_func_name, model_type_name)
     print(sim_func_name)
+    print(model_type_name)
     # print("I2Us :", cf_model.I2Us)
 
     print('=== calc scores ===');sys.stdout.flush()
     U2I2Score = cf_model.calcU2I2Score(cf_model.Us)
     for user in cf_model.Us:
-        #print("user:", user);sys.stdout.flush()
+        print("user:", user);sys.stdout.flush()
         I2Score = U2I2Score[user]
         for item, score in I2Score:
-            #print("     ", item, score)
+            print("     ", item, score)
             pass
 
     #print('=== recommend items ===');sys.stdout.flush()
