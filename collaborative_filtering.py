@@ -25,6 +25,7 @@ def pearson_correlation(I2Rating1, I2Rating2):
                 sim = XY / math.sqrt(X*Y)
     return sim
 
+
 def cosine_similarity(I2Rating1, I2Rating2):
     XY = sum([rating1*I2Rating2[item] for item,rating1 in I2Rating1.items() if item in I2Rating2])
     if XY == 0:
@@ -132,6 +133,12 @@ class cf:
         I2Score.sort(key=lambda x:x[1], reverse=True)
         return I2Score
 
+    def calcU2I2Score(self, Us):
+        U2I2Score = {}
+        for user in Us:
+            U2I2Score[user] = self.calcI2Score(user)            
+        return U2I2Score
+
     def recommend_item(self, user, N):
         I2Score = []
         for item in self.Is:
@@ -153,7 +160,7 @@ if __name__ == "__main__":
     print('***** begin *****');sys.stdout.flush()
 
     print('=== get dataset ===');sys.stdout.flush()
-    no = 3
+    no = 0
     data = dataset.dataset(no, N=2000, M=400, K=20, R=5, seed=1)
     # print(data)
     
@@ -165,11 +172,13 @@ if __name__ == "__main__":
     # print("I2Us :", cf_model.I2Us)
 
     print('=== calc scores ===');sys.stdout.flush()
+    U2I2Score = cf_model.calcU2I2Score(cf_model.Us)
     for user in cf_model.Us:
-        print("user:", user);sys.stdout.flush()
-        I2Score = cf_model.calcI2Score(user)
+        #print("user:", user);sys.stdout.flush()
+        I2Score = U2I2Score[user]
         for item, score in I2Score:
-            print("     ", item, score)
+            #print("     ", item, score)
+            pass
 
     #print('=== recommend items ===');sys.stdout.flush()
     #N = 10
